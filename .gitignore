@@ -1,0 +1,8 @@
+node_modules/
+dist/
+artifacts/
+.env
+client/.env
+server/.env
+*.log
+tmp-*.png

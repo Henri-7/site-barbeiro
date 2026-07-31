@@ -21,21 +21,25 @@ const clientDistCandidates = [
   resolve(currentDir, '../../client'),
   resolve(currentDir, '../../dist/client')
 ];
-const clientDistDir = clientDistCandidates.find((candidate) => existsSync(join(candidate, 'index.html')));
+function isClientBuildDir(candidate) {
+  return existsSync(join(candidate, 'index.html')) && existsSync(join(candidate, 'assets'));
+}
+
+const clientDistDir = clientDistCandidates.find(isClientBuildDir);
 
 const allowedOrigins = new Set([
   env.clientUrl,
   process.env.URL,
   process.env.DEPLOY_URL,
   process.env.DEPLOY_PRIME_URL,
+  process.env.RENDER_EXTERNAL_URL,
   'http://localhost:5173',
   'http://127.0.0.1:5173',
   'http://localhost:4173',
   'http://127.0.0.1:4173'
 ].filter(Boolean));
 
-app.use(
-  cors({
+const apiCors = cors({
     origin(origin, callback) {
       if (!origin || allowedOrigins.has(origin)) {
         callback(null, true);
@@ -44,9 +48,10 @@ app.use(
       callback(new Error('Origem não permitida pelo CORS.'));
     },
     credentials: false
-  })
-);
-app.use(express.json({ limit: '12mb' }));
+});
+
+app.use('/api', apiCors);
+app.use('/api', express.json({ limit: '12mb' }));
 
 app.get('/api/health', (_request, response) => {
   response.json({

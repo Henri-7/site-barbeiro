@@ -1,4 +1,4 @@
-import { allowLocalAdminFallback, hasSupabase, supabase } from '../config/supabase.js';
+import { allowLocalAdminFallback, hasSupabase, hasSupabaseAuth, supabase, supabaseAuth } from '../config/supabase.js';
 
 export async function requireAdmin(request, _response, next) {
   try {
@@ -8,7 +8,7 @@ export async function requireAdmin(request, _response, next) {
       return;
     }
 
-    if (!hasSupabase) {
+    if (!hasSupabase || !hasSupabaseAuth) {
       const error = new Error('Supabase administrativo não configurado.');
       error.status = 500;
       error.code = 'ADMIN_AUTH_NOT_CONFIGURED';
@@ -23,7 +23,7 @@ export async function requireAdmin(request, _response, next) {
       throw error;
     }
 
-    const { data: userData, error: userError } = await supabase.auth.getUser(token);
+    const { data: userData, error: userError } = await supabaseAuth.auth.getUser(token);
     if (userError || !userData.user) {
       const error = new Error('Sessao administrativa invalida.');
       error.status = 401;

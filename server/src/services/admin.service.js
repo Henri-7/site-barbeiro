@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { Buffer } from 'node:buffer';
 import { randomUUID } from 'node:crypto';
-import { allowLocalAdminFallback, hasSupabase, supabase } from '../config/supabase.js';
+import { allowLocalAdminFallback, hasSupabase, hasSupabaseAuth, supabase, supabaseAuth } from '../config/supabase.js';
 import { createAppointment } from '../repositories/appointments.repository.js';
 import { findServiceById } from '../repositories/services.repository.js';
 import { isValidBrazilianPhone } from '../utils/phone.js';
@@ -199,14 +199,14 @@ export async function loginAdmin(payload) {
     return buildAdminSession({ email: credentials.email }, null, { access_token: 'local-dev-token' });
   }
 
-  if (!hasSupabase) {
+  if (!hasSupabase || !hasSupabaseAuth) {
     const error = new Error('Supabase administrativo não configurado.');
     error.status = 500;
     error.code = 'ADMIN_AUTH_NOT_CONFIGURED';
     throw error;
   }
 
-  const { data, error } = await supabase.auth.signInWithPassword(credentials);
+  const { data, error } = await supabaseAuth.auth.signInWithPassword(credentials);
   if (error || !data.session || !data.user) {
     const authError = new Error('E-mail ou senha inválidos.');
     authError.status = 401;
@@ -225,14 +225,14 @@ export async function refreshAdminSession(payload) {
     return buildAdminSession({ email: 'admin@local.dev' }, null, { access_token: 'local-dev-token' });
   }
 
-  if (!hasSupabase) {
+  if (!hasSupabase || !hasSupabaseAuth) {
     const error = new Error('Supabase administrativo não configurado.');
     error.status = 500;
     error.code = 'ADMIN_AUTH_NOT_CONFIGURED';
     throw error;
   }
 
-  const { data, error } = await supabase.auth.refreshSession({ refresh_token: body.refreshToken });
+  const { data, error } = await supabaseAuth.auth.refreshSession({ refresh_token: body.refreshToken });
   if (error || !data.session || !data.user) {
     const authError = new Error('Sessão expirada. Entre novamente.');
     authError.status = 401;
@@ -247,14 +247,14 @@ export async function refreshAdminSession(payload) {
 export async function recoverAdminPassword(payload) {
   const body = parse(adminRecoverSchema, payload);
 
-  if (!hasSupabase) {
+  if (!hasSupabaseAuth) {
     const error = new Error('Recuperação de senha exige Supabase configurado.');
     error.status = 500;
     error.code = 'ADMIN_AUTH_NOT_CONFIGURED';
     throw error;
   }
 
-  const { error } = await supabase.auth.resetPasswordForEmail(body.email, {
+  const { error } = await supabaseAuth.auth.resetPasswordForEmail(body.email, {
     redirectTo: body.redirectTo
   });
 

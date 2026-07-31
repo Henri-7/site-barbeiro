@@ -45,7 +45,7 @@ const apiCors = cors({
         callback(null, true);
         return;
       }
-      callback(new Error('Origem não permitida pelo CORS.'));
+      callback(null, false);
     },
     credentials: false
 });

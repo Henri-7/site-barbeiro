@@ -9,6 +9,7 @@ export const env = {
   supabaseAnonKey: process.env.SUPABASE_ANON_KEY || '',
   supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY || '',
   clientUrl: process.env.CLIENT_URL || 'http://localhost:5173',
+  corsOrigins: process.env.CORS_ORIGINS || '',
   businessAddress: process.env.BUSINESS_ADDRESS || '',
   whatsappAccessToken: process.env.WHATSAPP_ACCESS_TOKEN || '',
   whatsappPhoneNumberId: process.env.WHATSAPP_PHONE_NUMBER_ID || '',

@@ -6,9 +6,8 @@ const supabaseAuthKey = env.supabaseAnonKey || supabaseKey;
 const isTestRuntime = process.env.NODE_ENV === 'test' || process.env.VITEST === 'true';
 const isProductionRuntime =
   process.env.NODE_ENV === 'production' ||
-  process.env.NETLIFY === 'true' ||
-  process.env.RENDER === 'true' ||
-  Boolean(process.env.RENDER_EXTERNAL_URL);
+  process.env.VERCEL === '1' ||
+  Boolean(process.env.VERCEL_URL);
 
 export const hasSupabase = Boolean(env.supabaseUrl && supabaseKey && !isTestRuntime);
 export const hasSupabaseAuth = Boolean(env.supabaseUrl && supabaseAuthKey && !isTestRuntime);

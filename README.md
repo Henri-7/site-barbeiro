@@ -35,6 +35,7 @@ SUPABASE_URL=
 SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
 CLIENT_URL=http://localhost:5173
+CORS_ORIGINS=
 ```
 
 Crie `client/.env` baseado em `client/.env.example` se quiser alterar a URL da API.
@@ -110,16 +111,21 @@ Crie estes buckets no Supabase Storage quando for usar upload real:
 
 Formatos planejados: JPEG, PNG, WebP e AVIF quando suportado.
 
-## Deploy
+## Deploy na Vercel
 
-Para publicar, use uma hospedagem que rode Node.js/Express junto com o build do Vite.
+Este projeto esta preparado para Vercel com o frontend Vite servido como estatico e a API Express executando como Serverless Function em `api/index.js`.
 
-Comandos padrao:
+Configuracao recomendada no painel da Vercel:
 
-```bash
-npm install
-npm run build
-npm run start
-```
+- Framework Preset: `Vite`
+- Root Directory: `.`
+- Install Command: `npm install`
+- Build Command: `npm run build`
+- Output Directory: `dist/client`
+- Node.js Version: `22.x`
 
-Configure as variaveis de ambiente da hospedagem com os mesmos nomes do `server/.env.example`.
+O arquivo `vercel.json` mantem as rotas `/api/*` apontando para a API Express e redireciona as demais rotas para `index.html`, preservando refresh direto em `/admin` e demais rotas SPA.
+
+Configure as variaveis de ambiente da Vercel com os mesmos nomes do `server/.env.example`. Para producao, use `CLIENT_URL` com o dominio publico final, por exemplo `https://seu-dominio.com`. Para multiplos dominios ou previews externos, use `CORS_ORIGINS` separado por virgula.
+
+Em producao, mantenha `VITE_API_URL=/api` ou deixe a variavel ausente para usar chamadas relativas.
